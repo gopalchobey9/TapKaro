@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JWT Auth Test</title>
+</head>
+<body>
+  <h2>JWT Auth Test</h2>
+  <div id="login-section">
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required><br><br>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required><br><br>
+      <button type="submit">Sign In</button>
+    </form>
+    <pre id="loginResult"></pre>
+  </div>
+  <div id="api-section" style="display:none;">
+    <h3>Call Protected API</h3>
+    <button id="callApiBtn">Call /api/protected</button>
+    <pre id="apiResult"></pre>
+    <button id="logoutBtn">Logout</button>
+  </div>
+  <script>
+    let jwtToken = null;
+    const loginSection = document.getElementById('login-section');
+    const apiSection = document.getElementById('api-section');
+    const loginForm = document.getElementById('loginForm');
+    const loginResult = document.getElementById('loginResult');
+    const apiResult = document.getElementById('apiResult');
+    const callApiBtn = document.getElementById('callApiBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    loginForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      loginResult.textContent = 'Logging in...';
+      const response = await fetch('http://localhost:5050/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const text = await response.text();
+      if (response.ok && text && !text.includes('Invalid')) {
+        jwtToken = text;
+        loginResult.textContent = 'Login successful! JWT token saved.';
+        loginSection.style.display = 'none';
+        apiSection.style.display = 'block';
+      } else {
+        loginResult.textContent = 'Login failed: ' + text;
+      }
+    });
+
+    callApiBtn.addEventListener('click', async function() {
+      apiResult.textContent = 'Calling protected API...';
+      const response = await fetch('http://localhost:5050/api/protected', {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + jwtToken }
+      });
+      const text = await response.text();
+      apiResult.textContent = `Status: ${response.status}\n${text}`;
+    });
+
+    logoutBtn.addEventListener('click', function() {
+      jwtToken = null;
+      apiSection.style.display = 'none';
+      loginSection.style.display = 'block';
+      loginResult.textContent = '';
+      apiResult.textContent = '';
+      loginForm.reset();
+    });
+  </script>
+</body>
+</html>
