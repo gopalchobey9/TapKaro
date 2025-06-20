@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import SignupScreen from './screens/SignupScreen';
-import SigninScreen from './screens/SigninScreen';
-import HomeScreen from './screens/HomeScreen';
+import SigninFlow from './screens/Signin/flow';
+import SignupFlow from './screens/Signup/flow';
+import HomeFlow from './screens/Home/flow';
+
 
 export type RootStackParamList = {
   Signup: undefined;
@@ -16,9 +17,9 @@ const Stack = createStackNavigator<RootStackParamList>();
 const AppNavigator = () => (
   <NavigationContainer>
     <Stack.Navigator initialRouteName="Signup">
-      <Stack.Screen name="Signup" component={SignupScreen} />
-      <Stack.Screen name="Signin" component={SigninScreen} />
-      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Signup" component={SignupFlow} />
+      <Stack.Screen name="Signin" component={SigninFlow} />
+      <Stack.Screen name="Home" component={HomeFlow} />
     </Stack.Navigator>
   </NavigationContainer>
 );
